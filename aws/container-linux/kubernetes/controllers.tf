@@ -5,7 +5,7 @@ resource "aws_route53_record" "etcds" {
   # DNS Zone where record should be created
   zone_id = "${var.dns_zone_id}"
 
-  name = "${format("%s-etcd%d.%s.", var.cluster_name, count.index, var.dns_zone)}"
+  name = "${format("etcd%d.%s.", count.index, var.dns_zone)}"
   type = "A"
   ttl  = 300
 
@@ -47,7 +47,7 @@ data "template_file" "controller_config" {
   vars = {
     # Cannot use cyclic dependencies on controllers or their DNS records
     etcd_name   = "etcd${count.index}"
-    etcd_domain = "${var.cluster_name}-etcd${count.index}.${var.dns_zone}"
+    etcd_domain = "etcd${count.index}.${var.dns_zone}"
 
     # etcd0=https://cluster-etcd0.example.com,etcd1=https://cluster-etcd1.example.com,...
     etcd_initial_cluster = "${join(",", formatlist("%s=https://%s:2380", null_resource.repeat.*.triggers.name, null_resource.repeat.*.triggers.domain))}"
@@ -69,7 +69,7 @@ resource null_resource "repeat" {
 
   triggers {
     name   = "etcd${count.index}"
-    domain = "${var.cluster_name}-etcd${count.index}.${var.dns_zone}"
+    domain = "etcd${count.index}.${var.dns_zone}"
   }
 }
 

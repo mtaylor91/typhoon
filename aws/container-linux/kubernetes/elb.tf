@@ -2,7 +2,7 @@
 resource "aws_route53_record" "apiserver" {
   zone_id = "${var.dns_zone_id}"
 
-  name = "${format("%s.%s.", var.cluster_name, var.dns_zone)}"
+  name = "${format("k8s.%s.", var.dns_zone)}"
   type = "A"
 
   # AWS recommends their special "alias" records for ELBs

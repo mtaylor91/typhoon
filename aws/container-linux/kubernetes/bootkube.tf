@@ -3,7 +3,7 @@ module "bootkube" {
   source = "git::https://github.com/poseidon/terraform-render-bootkube.git?ref=203b90169ead2380f74cc64ea1f02c109806c9bc"
 
   cluster_name          = "${var.cluster_name}"
-  api_servers           = ["${format("%s.%s", var.cluster_name, var.dns_zone)}"]
+  api_servers           = ["${format("k8s.%s", var.dns_zone)}"]
   etcd_servers          = ["${aws_route53_record.etcds.*.fqdn}"]
   asset_dir             = "${var.asset_dir}"
   networking            = "${var.networking}"
