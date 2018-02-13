@@ -4,9 +4,10 @@ resource "null_resource" "copy-secrets" {
 
   connection {
     type    = "ssh"
-    host    = "${element(aws_instance.controllers.*.public_ip, count.index)}"
+    host    = "${element(aws_instance.controllers.*.private_ip, count.index)}"
     user    = "core"
     timeout = "15m"
+    bastion_host = "${aws_instance.bastion.public_ip}"
   }
 
   provisioner "file" {
@@ -69,13 +70,14 @@ resource "null_resource" "copy-secrets" {
 # Secure copy bootkube assets to ONE controller and start bootkube to perform
 # one-time self-hosted cluster bootstrapping.
 resource "null_resource" "bootkube-start" {
-  depends_on = ["module.bootkube", "null_resource.copy-secrets", "aws_route53_record.apiserver"]
+  depends_on = ["module.bootkube", "null_resource.copy-secrets", "aws_route53_record.k8s"]
 
   connection {
     type    = "ssh"
-    host    = "${aws_instance.controllers.0.public_ip}"
+    host    = "${aws_instance.controllers.0.private_ip}"
     user    = "core"
     timeout = "15m"
+    bastion_host = "${aws_instance.bastion.public_ip}"
   }
 
   provisioner "file" {

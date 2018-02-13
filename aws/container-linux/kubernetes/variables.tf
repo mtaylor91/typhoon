@@ -42,6 +42,18 @@ variable "host_cidr" {
   default     = "10.0.0.0/16"
 }
 
+variable "public_access_cidrs" {
+  description = "List of CIDR IPv4 ranges to allow public access"
+  type        = "list"
+  default     = ["0.0.0.0/0"]
+}
+
+variable "protected_access_cidrs" {
+  description = "List of CIDR IPv4 ranges to allow protected access"
+  type        = "list"
+  default     = ["0.0.0.0/0"]
+}
+
 variable "controller_count" {
   type        = "string"
   default     = "1"
@@ -64,6 +76,12 @@ variable "worker_type" {
   type        = "string"
   default     = "t2.small"
   description = "Worker EC2 instance type"
+}
+
+variable "bastion_type" {
+  type        = "string"
+  default     = "t2.small"
+  description = "Bastion EC2 instance type"
 }
 
 # bootkube assets

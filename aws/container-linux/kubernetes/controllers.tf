@@ -35,8 +35,8 @@ resource "aws_instance" "controllers" {
   }
 
   # network
-  associate_public_ip_address = true
-  subnet_id                   = "${element(aws_subnet.public.*.id, count.index)}"
+  associate_public_ip_address = false
+  subnet_id                   = "${element(aws_subnet.private.*.id, count.index)}"
   vpc_security_group_ids      = ["${aws_security_group.controller.id}"]
 
   # iam
@@ -103,7 +103,7 @@ resource "aws_security_group_rule" "controller-icmp" {
   protocol    = "icmp"
   from_port   = 0
   to_port     = 0
-  cidr_blocks = ["0.0.0.0/0"]
+  cidr_blocks = ["${var.host_cidr}"]
 }
 
 resource "aws_security_group_rule" "controller-ssh" {
@@ -113,7 +113,7 @@ resource "aws_security_group_rule" "controller-ssh" {
   protocol    = "tcp"
   from_port   = 22
   to_port     = 22
-  cidr_blocks = ["0.0.0.0/0"]
+  cidr_blocks = ["${var.host_cidr}"]
 }
 
 resource "aws_security_group_rule" "controller-apiserver" {
@@ -123,7 +123,7 @@ resource "aws_security_group_rule" "controller-apiserver" {
   protocol    = "tcp"
   from_port   = 443
   to_port     = 443
-  cidr_blocks = ["0.0.0.0/0"]
+  cidr_blocks = ["${var.host_cidr}"]
 }
 
 resource "aws_security_group_rule" "controller-etcd" {

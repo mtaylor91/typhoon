@@ -1,0 +1,32 @@
+---
+passwd:
+  users:
+    - name: core
+      ssh_authorized_keys:
+        - "${ssh_authorized_key}"
+
+networkd:
+  units:
+    - name: eth0_nat.network
+      contents: |
+        [Match]
+        Name=eth0
+
+        [Network]
+        DHCP=yes
+        IPForward=yes
+
+systemd:
+  units:
+    - name: eth0_nat_setup.service
+      enable: true
+      contents: |
+        [Unit]
+        Description=Set up iptables rule for NAT translation of eth0 egress.
+        Type=oneshot
+
+        [Service]
+        ExecStart=/sbin/iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
+
+        [Install]
+        WantedBy=multi-user.target

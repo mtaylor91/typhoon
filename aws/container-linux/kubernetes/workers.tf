@@ -11,7 +11,7 @@ resource "aws_autoscaling_group" "workers" {
   health_check_grace_period = 30
 
   # network
-  vpc_zone_identifier = ["${aws_subnet.public.*.id}"]
+  vpc_zone_identifier = ["${aws_subnet.private.*.id}"]
 
   # template
   launch_configuration = "${aws_launch_configuration.worker.name}"
@@ -53,6 +53,7 @@ resource "aws_launch_configuration" "worker" {
   iam_instance_profile = "${aws_iam_instance_profile.worker_profile.name}"
 
   # network
+  associate_public_ip_address = false
   security_groups = ["${aws_security_group.worker.id}"]
 
   lifecycle {
@@ -101,7 +102,7 @@ resource "aws_security_group_rule" "worker-icmp" {
   protocol    = "icmp"
   from_port   = 0
   to_port     = 0
-  cidr_blocks = ["0.0.0.0/0"]
+  cidr_blocks = ["${var.host_cidr}"]
 }
 
 resource "aws_security_group_rule" "worker-ssh" {
@@ -111,7 +112,7 @@ resource "aws_security_group_rule" "worker-ssh" {
   protocol    = "tcp"
   from_port   = 22
   to_port     = 22
-  cidr_blocks = ["0.0.0.0/0"]
+  cidr_blocks = ["${var.host_cidr}"]
 }
 
 resource "aws_security_group_rule" "worker-http" {
@@ -121,7 +122,7 @@ resource "aws_security_group_rule" "worker-http" {
   protocol    = "tcp"
   from_port   = 80
   to_port     = 80
-  cidr_blocks = ["0.0.0.0/0"]
+  cidr_blocks = ["${var.host_cidr}"]
 }
 
 resource "aws_security_group_rule" "worker-https" {
@@ -131,7 +132,7 @@ resource "aws_security_group_rule" "worker-https" {
   protocol    = "tcp"
   from_port   = 443
   to_port     = 443
-  cidr_blocks = ["0.0.0.0/0"]
+  cidr_blocks = ["${var.host_cidr}"]
 }
 
 resource "aws_security_group_rule" "worker-flannel" {
